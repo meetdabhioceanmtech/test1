@@ -1,0 +1,50 @@
+name: Flutter Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - macos
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    # Set up Flutter with specific version
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.24.3"  # Flutter version
+
+    - name: Install Dart and Flutter dependencies
+      run: flutter pub get
+
+    # Build APK with Gradle version 8.7
+    - name: Build APK
+      run: flutter build apk --release
+      env:
+        GRADLE_VERSION: "8.7"  # Gradle version
+
+    # Build AAB file for release
+    - name: Build AAB
+      run: flutter build appbundle --release
+      env:
+        GRADLE_VERSION: "8.7"
+
+    # Upload APK as a downloadable artifact
+    - name: Upload APK as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
+
+    # Upload AAB as a downloadable artifact
+    - name: Upload AAB as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-aab
+        path: build/app/outputs/bundle/release/app-release.aab
