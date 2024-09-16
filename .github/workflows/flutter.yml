@@ -1,50 +1,51 @@
-name: Flutter Build and Release
+name: Flutter CI/CD
 
 on:
   push:
     branches:
       - main
-    tags:
-      - macos
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: macos-latest
 
+    strategy:
+      matrix:
+        platform: [android, ios]
+
     steps:
-    - uses: actions/checkout@v2
-    
-    # Set up Flutter with specific version
-    - name: Set up Flutter
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: "3.24.3"  # Flutter version
+        flutter-version: '3.24.3' # Update with your Flutter version
 
-    - name: Install Dart and Flutter dependencies
+    - name: Install dependencies
       run: flutter pub get
 
-    # Build APK with Gradle version 8.7
-    - name: Build APK
+    - name: Build Android
+      if: matrix.platform == 'android'
       run: flutter build apk --release
-      env:
-        GRADLE_VERSION: "8.7"  # Gradle version
 
-    # Build AAB file for release
-    - name: Build AAB
-      run: flutter build appbundle --release
-      env:
-        GRADLE_VERSION: "8.7"
+    - name: Build iOS
+      if: matrix.platform == 'ios'
+      run: flutter build ios --release --no-codesign
 
-    # Upload APK as a downloadable artifact
-    - name: Upload APK as Artifact
+    - name: Upload Android APK
+      if: matrix.platform == 'android'
       uses: actions/upload-artifact@v2
       with:
-        name: release-apk
+        name: android-apk
         path: build/app/outputs/flutter-apk/app-release.apk
 
-    # Upload AAB as a downloadable artifact
-    - name: Upload AAB as Artifact
+    - name: Upload iOS build
+      if: matrix.platform == 'ios'
       uses: actions/upload-artifact@v2
       with:
-        name: release-aab
-        path: build/app/outputs/bundle/release/app-release.aab
+        name: ios-build
+        path: build/ios/ipa
