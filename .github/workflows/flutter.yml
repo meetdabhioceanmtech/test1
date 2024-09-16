@@ -38,14 +38,14 @@ jobs:
 
     - name: Upload Android APK
       if: matrix.platform == 'android'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: android-apk
         path: build/app/outputs/flutter-apk/app-release.apk
 
     - name: Upload iOS build
       if: matrix.platform == 'ios'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ios-build
         path: build/ios/ipa
