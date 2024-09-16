@@ -54,6 +54,8 @@ jobs:
       - run: flutter pub get
       - run: flutter clean
       - run: flutter build apk --release
+      - name: List build directory
+        run: ls -R build/app/outputs/flutter-apk      
       - name: Upload Android APK
         uses: actions/upload-artifact@v3
         with:
