@@ -62,7 +62,7 @@ on:
 #           name: android-apk
 #           path: build/app/outputs/flutter-apk/app-release.apk
 
-name: "Build & Release"
+# name: "Build & Release"
 jobs:
   build:
     name: Build & Release
